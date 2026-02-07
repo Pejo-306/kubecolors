@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: color-api-config
+  labels:
+    app: kubecolors
+    resource: backend-config
+data:
+  config.json: |
+    {}
