@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: color-api
+  namespace: kubecolors
   labels:
     app: kubecolors
     resource: backend-service

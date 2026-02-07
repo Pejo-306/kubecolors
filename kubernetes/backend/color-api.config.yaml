@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: color-api-config
+  namespace: kubecolors
   labels:
     app: kubecolors
     resource: backend-config
