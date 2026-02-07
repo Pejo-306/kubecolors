@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init
+  labels:
+    app: kubecolors
+    resource: database
+    component: initialization-script
+data:
+  mongo-init.js: |
+    const colorsDatabase = process.env.COLORS_DATABASE;
+    const colorsUsername = process.env.COLORS_USERNAME;
+    const colorsPassword = process.env.COLORS_PASSWORD;
+
+    db = db.getSiblingDB(colorsDatabase);
+
+    db.createUser({
+      user: colorsUsername,
+      pwd: colorsPassword,
+      roles: [
+        {
+          role: "readWrite",
+          db: colorsDatabase,
+        },
+      ],
+    });
