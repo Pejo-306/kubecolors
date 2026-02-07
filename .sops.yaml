@@ -1,0 +1,5 @@
+creation_rules:
+  # Encrypt only the `stringData` values in Secret manifests
+  - path_regex: kubernetes/.*\.yaml$
+    encrypted_regex: "^(data|stringData)$"
+    age: "age192pug0cpm4wedex36afp7zfnt0jjc4wlp85mwujc63t5a8vy2psq0en2hz"
