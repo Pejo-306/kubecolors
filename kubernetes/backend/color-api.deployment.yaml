@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: color-api
-          image: penikolov23/color-api:1.3.0
+          image: penikolov23/color-api:2.0.0-alpha
           ports:
             - containerPort: 80
           resources:

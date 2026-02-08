@@ -1,17 +1,25 @@
 {
   "name": "color-api",
-  "version": "1.3.0",
+  "version": "2.0.0-alpha",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "imports": {
+    "#routes/*": "./src/routes/*.js",
+    "#models/*": "./src/models/*.js",
+    "#src/*": "./src/*.js"
+  },
   "dependencies": {
-    "express": "4.19.2"
+    "express": "4.19.2",
+    "mongoose": "8.5.1",
+    "morgan": "1.10.0",
+    "body-parser": "1.20.2"
   }
 }
