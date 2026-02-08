@@ -8,4 +8,11 @@ metadata:
     resource: backend-config
 data:
   config.json: |
-    {}
+    {
+      "database": {
+        "statefulSet": "mongo-shards",
+        "service": "database",
+        "replicas": 3,
+        "port": 27017
+      }
+    }
