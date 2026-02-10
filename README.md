@@ -27,10 +27,10 @@ exercise as well.
 ## Overview
 
 `kubecolors` consists of:
-- `color-api` REST API for storing and retrieving named colors. Deployed as a 
+- `color-api`:  REST API for storing and retrieving named colors. Deployed as a 
 Kubernetes Deployment, exposed via a NodePort Service.
-- Distributed **MongoDB** StatefulSet to store color data. Sharding is implemented via
-application-level consistent hashing.
+- `mongo-shards`: Distributed **MongoDB** StatefulSet to store color data.
+Sharding is implemented via application-level consistent hashing.
 - Secrets are encrypted at rest with **SOPS + age**.
 
 More on the system's design can be found inside [system-design.md](system-design.md)
@@ -69,7 +69,7 @@ require `KUBECOLORS_ENDPOINT` to be set. It's the NodePort endpoint of the
 
 ```bash
 kubectl get svc -n kubecolors
-export KUBECOLORS_ENDPOINT=http://localhost:30080
+export KUBECOLORS_ENDPOINT="localhost:30080"
 ```
 
 ### Verify
@@ -125,6 +125,7 @@ make down
 - [Express](https://expressjs.com/)
 - [MongoDB](https://www.mongodb.com/)
 - [SOPS](https://github.com/getsops/sops) and [age](https://github.com/FiloSottile/age)
+- [FigJam](https://www.figma.com/figjam/) to design [architecture.png](architecture.png)
 
 ## License
 
