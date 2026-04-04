@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: color-api
-  namespace: kubecolors
   labels:
     app: kubecolors
     resource: backend
@@ -32,6 +31,9 @@ spec:
           ports:
             - containerPort: 80
           resources:
+            requests:
+              cpu: 200m
+              memory: 64Mi
             limits:
               cpu: 500m
               memory: 128Mi

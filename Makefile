@@ -1,4 +1,4 @@
-.PHONY: help namespace database backend secrets up down build push smoke-test flush load-test load-data
+.PHONY: help namespace secrets up down build push smoke-test flush load-test load-data
 .DEFAULT_GOAL := up
 
 # Build variables
@@ -10,6 +10,11 @@ SRC_DIR := color-api
 SCRIPTS_DIR := scripts
 KUBERNETES_DIR := kubernetes
 SOPS_AGE_KEY_FILE := keys.txt
+
+# Kustomize overlays
+OVERLAY ?= docker-desktop
+OVERLAY_DIR := ${KUBERNETES_DIR}/overlay/${OVERLAY}
+NAMESPACE_FILE := $(wildcard ${OVERLAY_DIR}/*namespace*.yaml)
 
 # Test variables
 KUBECOLORS_ENDPOINT ?=
@@ -33,12 +38,10 @@ help:
 	@echo "    └── BUILD_TAG                      - Tag of the color-api image (default: penikolov23/color-api:${BUILD_VERSION})"
 	@echo ""
 	@echo "\033[1mKUBERNETES DEPLOYMENT:\033[0m"
-	@echo "    namespace                          - Create kubecolors namespace"
-	@echo "    secrets                            - Decrypt and apply secrets"
-	@echo "    database                           - Deploy database resources"
-	@echo "    backend                            - Deploy backend resources"
-	@echo "    up                                 - Deploy full stack (namespace, secrets, database, backend)"
-	@echo "    down                               - Delete all Kubernetes resources"
+	@echo "    namespace                          - Apply the overlay Namespace manifest"
+	@echo "    secrets                            - Decrypt and apply secrets for current OVERLAY"
+	@echo "    up                                 - namespace, secrets, then kustomize apply (DB + API)"
+	@echo "    down                               - Delete the overlay namespace (wipes all resources in it)"
 	@echo ""
 	@echo "\033[1mTESTING & OPERATIONS:\033[0m"
 	@echo "    smoke-test                         - Run smoke tests against endpoint"
@@ -56,8 +59,13 @@ help:
 	@echo "    ├── GETS                           - Number of gets to perform (default: 200)"
 	@echo "    └── KEY_LENGTH                     - Length of the key to use (default: 6)"
 	@echo ""
+	@echo "  Kubernetes:"
+	@echo "    └── OVERLAY                        - Kustomize overlay name (default: docker-desktop)."
+	@echo "                                         Use dev or prod for kubecolors-dev / kubecolors-prod."
+	@echo ""
 	@echo "\033[1mUSAGE EXAMPLES:\033[0m"
 	@echo "  make up"
+	@echo "  make up OVERLAY=dev"
 	@echo "  make smoke-test KUBECOLORS_ENDPOINT=http://localhost:8080"
 	@echo "  make load-data RECORDS=500 KEY_LENGTH=8"
 	@echo ""
@@ -76,26 +84,21 @@ build:
 push:
 	docker push ${BUILD_TAG}
 
-# Kuberenetes deployment targets
+# Kubernetes deployment targets
 # -----------------------------
 
 namespace:
-	kubectl apply -f ${KUBERNETES_DIR}/kubecolors-namespace.yaml
-
-database:
-	kubectl apply -f ${KUBERNETES_DIR}/database/
-
-backend:
-	kubectl apply -f ${KUBERNETES_DIR}/backend/
+	kubectl apply -f $(NAMESPACE_FILE)
 
 secrets:
-	@find ${KUBERNETES_DIR}/secrets/ -name '*.yaml' -exec sh -c \
+	@find ${OVERLAY_DIR}/secrets/ -name '*.yaml' -exec sh -c \
 		'SOPS_AGE_KEY_FILE=${SOPS_AGE_KEY_FILE} sops --decrypt "$$1" | kubectl apply -f -' _ {} \;
 
-up: namespace secrets database backend
+up: namespace secrets
+	kustomize build ${OVERLAY_DIR} | kubectl apply -f -
 
 down:
-	kubectl delete -f ${KUBERNETES_DIR}/
+	kubectl delete namespace $$(grep -E '^namespace:[[:space:]]' ${OVERLAY_DIR}/kustomization.yaml | head -1 | awk '{print $$2}') --ignore-not-found
 
 # Tests and operations targets
 # -----------------------------
