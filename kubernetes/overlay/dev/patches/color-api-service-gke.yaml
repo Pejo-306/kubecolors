@@ -1,0 +1,7 @@
+# GKE: external IP for color-api
+apiVersion: v1
+kind: Service
+metadata:
+  name: color-api
+spec:
+  type: LoadBalancer

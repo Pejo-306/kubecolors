@@ -43,16 +43,23 @@ spec:
           resources:
             limits:
               memory: 512Mi
-              cpu: 1000m
+              cpu: 500m
             requests:
               memory: 256Mi
-              cpu: 500m
+              cpu: 200m
+          startupProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 30
+            failureThreshold: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
           livenessProbe:
             tcpSocket:
-              port: 27017  # command: ["mongosh", "--eval", "db.adminCommand('ping')"]
-            failureThreshold: 3
-            periodSeconds: 10
-            initialDelaySeconds: 30
+              port: 27017
+            initialDelaySeconds: 90
+            failureThreshold: 6
+            periodSeconds: 30
             timeoutSeconds: 5
           volumeMounts:
             - name: color-data
@@ -73,7 +80,6 @@ spec:
           component: storage
       spec:
         accessModes: [ "ReadWriteOncePod" ]
-        storageClassName: hostpath
         resources:
           requests:
             storage: 128Mi

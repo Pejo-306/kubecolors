@@ -1,0 +1,8 @@
+{
+  "database": {
+    "statefulSet": "mongo-shards",
+    "service": "database",
+    "replicas": 3,
+    "port": 27017
+  }
+}

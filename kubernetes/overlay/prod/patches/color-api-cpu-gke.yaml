@@ -1,0 +1,15 @@
+# Right-size CPU for GKE scheduling (base uses higher requests/limits).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: color-api
+spec:
+  template:
+    spec:
+      containers:
+        - name: color-api
+          resources:
+            requests:
+              cpu: 50m
+            limits:
+              cpu: 250m

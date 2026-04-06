@@ -1,0 +1,21 @@
+# Strategic merge patch for mongo-shards StatefulSet on GKE.
+# Use in case GKE is struggling to schedule pods in the same zone.
+# To use: add `- path: patches/mongo-node-affinity.yaml` under `patches` in ../kustomization.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-shards
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - europe-west3-a
+                      - europe-west3-b
+                      - europe-west3-c

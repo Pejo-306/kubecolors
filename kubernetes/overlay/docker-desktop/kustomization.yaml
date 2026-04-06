@@ -6,3 +6,24 @@ namespace: kubecolors
 resources:
   - kubecolors-namespace.yaml
   - ../../base
+
+patches:
+  # Storage class for local Docker Desktop
+  - target:
+      kind: StatefulSet
+      name: mongo-shards
+    patch: |-
+      - op: add
+        path: /spec/volumeClaimTemplates/0/spec/storageClassName
+        value: hostpath
+
+  # NodePort service for local access
+  - target:
+      kind: Service
+      name: color-api
+    patch: |-
+      - op: add
+        path: /spec/type
+        value: NodePort
+
+  - path: patches/probe-initial-delay-10s.yaml

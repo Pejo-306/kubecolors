@@ -45,7 +45,7 @@ async function checkDatabaseConnections() {
                 username: username,
                 password: password,
             },
-            connectTimeoutMS: 1000,
+            connectTimeoutMS: 10000,
         });
         await connection.asPromise();
         console.log(`Shard ${name} is reachable at ${host}:${port}`);
@@ -128,7 +128,7 @@ class Ring {
             const { username, password } = getDatabaseCredentials();
             const connection = mongoose.createConnection(mongoUri, {
                 auth: { username, password },
-                connectTimeoutMS: 1000,
+                connectTimeoutMS: 10000,
             });
 
             await connection.asPromise();

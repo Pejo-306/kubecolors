@@ -6,3 +6,45 @@ namespace: kubecolors-dev
 resources:
   - dev-namespace.yaml
   - ../../base
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: color-api-config
+    behavior: replace
+    files:
+      - config.json=config/config.json
+
+patches:
+  # GKE standard storage class
+  - target:
+      kind: StatefulSet
+      name: mongo-shards
+    patch: |-
+      - op: add
+        path: /spec/volumeClaimTemplates/0/spec/storageClassName
+        value: standard-rwo
+
+  - target:
+      kind: StatefulSet
+      name: mongo-shards
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+
+  - path: patches/mongo-cpu-gke.yaml
+  - path: patches/mongo-node-affinity.yaml
+  - path: patches/mongo-fsgroup.yaml
+
+  - target:
+      kind: Deployment
+      name: color-api
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+
+  - path: patches/color-api-service-gke.yaml
+  - path: patches/color-api-cpu-gke.yaml

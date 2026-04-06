@@ -1,0 +1,10 @@
+# Let mongod (UID/GID 999) write to GKE PD-backed volumes at /data/db.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-shards
+spec:
+  template:
+    spec:
+      securityContext:
+        fsGroup: 999

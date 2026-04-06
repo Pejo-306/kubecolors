@@ -20,14 +20,32 @@ fi
 assert() {
   local method="$1" path="$2" expected="$3" label="$4"
   shift 4
+  local url="http://${KUBECOLORS_ENDPOINT}${path}"
   local code
-  code=$(curl -s -o /dev/null -w "%{http_code}" "$@" -X "$method" "http://${KUBECOLORS_ENDPOINT}${path}")
+  code=$(curl -sS -o /dev/null -w "%{http_code}" "$@" -X "$method" "$url") || code="curl_err"
   if [[ "$code" == "$expected" ]]; then
     echo "PASS  $method $path ($label) — $code"
-  else
-    echo "FAIL  $method $path ($label) — expected $expected, got $code"
-    FAIL=1
+    return 0
   fi
+
+  echo "FAIL  $method $path ($label) — expected $expected, got $code" >&2
+  {
+    echo ""
+    echo "--- DEBUG (smoke-test assert failure) ---"
+    echo "endpoint:    ${KUBECOLORS_ENDPOINT}"
+    echo "url:           ${url}"
+    echo "method:        ${method}"
+    echo "label:         ${label}"
+    echo "expected code: ${expected}"
+    echo "got code:      ${code}"
+    echo "curl args:     $*"
+    echo "--- response (status + headers + body, truncated) ---"
+    curl -sS -D - "$@" -X "$method" "$url" 2>&1 | head -c 8192 || true
+    echo ""
+    echo "--- end DEBUG ---"
+    echo ""
+  } >&2
+  FAIL=1
 }
 
 # Health / readiness probes
