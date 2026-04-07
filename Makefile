@@ -1,4 +1,4 @@
-.PHONY: help namespace secrets up down build push smoke-test flush load-test load-data
+.PHONY: help namespace secrets up down build push smoke-test metrics flush load-test load-data
 .DEFAULT_GOAL := up
 
 # Build variables
@@ -45,6 +45,7 @@ help:
 	@echo ""
 	@echo "\033[1mTESTING & OPERATIONS:\033[0m"
 	@echo "    smoke-test                         - Run smoke tests against endpoint"
+	@echo "    metrics                            - Fetch Prometheus /metrics from the API"
 	@echo "    flush                              - Flush data at endpoint"
 	@echo "    load-data                          - Load sample data (RECORDS=200, KEY_LENGTH=6)"
 	@echo "    load-test                          - Run load test (CONCURRENT_REQUESTS=10, RECORDS=100, UPDATES=50, GETS=200)"
@@ -67,6 +68,7 @@ help:
 	@echo "  make up"
 	@echo "  make up OVERLAY=dev"
 	@echo "  make smoke-test KUBECOLORS_ENDPOINT=http://localhost:8080"
+	@echo "  make metrics
 	@echo "  make load-data RECORDS=500 KEY_LENGTH=8"
 	@echo ""
 	@echo "\033[1mLOAD TESTING:\033[0m"
@@ -109,6 +111,10 @@ down:
 smoke-test:
 	@if [ -z "${KUBECOLORS_ENDPOINT}" ]; then echo "Error: KUBECOLORS_ENDPOINT is required"; exit 1; fi
 	@bash ${SCRIPTS_DIR}/smoke-test.sh --endpoint ${KUBECOLORS_ENDPOINT}
+
+metrics:
+	@if [ -z "${KUBECOLORS_ENDPOINT}" ]; then echo "Error: KUBECOLORS_ENDPOINT is required"; exit 1; fi
+	@curl -sS "${KUBECOLORS_ENDPOINT}/metrics"
 
 load-data:
 	@if [ -z "${KUBECOLORS_ENDPOINT}" ]; then echo "Error: KUBECOLORS_ENDPOINT is required"; exit 1; fi

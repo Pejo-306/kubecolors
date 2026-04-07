@@ -7,6 +7,10 @@ resources:
   - dev-namespace.yaml
   - ../../base
 
+images:
+  - name: penikolov23/color-api
+    newTag: "2.1.0"
+
 generatorOptions:
   disableNameSuffixHash: true
 
