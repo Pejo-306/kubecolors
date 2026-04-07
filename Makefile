@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := up
 
 # Build variables
-BUILD_VERSION := 2.0.0
+BUILD_VERSION := 2.0.1
 BUILD_TAG := penikolov23/color-api:${BUILD_VERSION}
 
 # Project directories and files
@@ -34,7 +34,7 @@ help:
 	@echo "    push                               - Push color-api image to registry"
 	@echo ""
 	@echo "  Environment variables:"
-	@echo "    ├── BUILD_VERSION                  - Version of the color-api image (default: 2.0.0)"
+	@echo "    ├── BUILD_VERSION                  - Version of the color-api image (default: 2.0.1)"
 	@echo "    └── BUILD_TAG                      - Tag of the color-api image (default: penikolov23/color-api:${BUILD_VERSION})"
 	@echo ""
 	@echo "\033[1mKUBERNETES DEPLOYMENT:\033[0m"
@@ -76,7 +76,7 @@ help:
 # Docker build and push targets
 # -----------------------------
 # You can change the build tag to your own registry and image name. Or deploy
-# the kubernetes resources with my `penikolov23/color-api:2.0.0` image.
+# the kubernetes resources with my `penikolov23/color-api:2.0.1` image.
 
 build:
 	docker build -t ${BUILD_TAG} ${SRC_DIR}
