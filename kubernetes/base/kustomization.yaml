@@ -7,3 +7,6 @@ resources:
   - backend/color-api.config.yaml
   - backend/color-api.deployment.yaml
   - backend/color-api.service.yaml
+  - network-policies/deny-ingress.yaml
+  - network-policies/allow-colorapi-ingress.yaml
+  - network-policies/allow-external-traffic.yaml

@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-external-traffic
+spec:
+  podSelector:
+    matchLabels:
+      app: kubecolors
+      resource: backend
+      component: color-api
+  policyTypes:
+    - Ingress
+  ingress:
+    - {}

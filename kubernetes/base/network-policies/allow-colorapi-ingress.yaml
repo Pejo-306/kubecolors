@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-colorapi-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app: kubecolors
+      resource: database
+      component: mongo
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: kubecolors
+              resource: backend
+              component: color-api
