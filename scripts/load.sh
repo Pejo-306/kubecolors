@@ -19,6 +19,11 @@ if [[ -z "$KUBECOLORS_ENDPOINT" ]]; then
   exit 1
 fi
 
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=kubecolors-base-url.sh
+source "${_SCRIPT_DIR}/kubecolors-base-url.sh"
+KUBECOLORS_BASE_URL="$(kubecolors_normalized_base_url "$KUBECOLORS_ENDPOINT")"
+
 rand_key() { cat /dev/urandom | LC_ALL=C tr -dc 'a-z' | head -c "$KEY_LENGTH" || true; }
 rand_hex() { printf '#%06x' $((RANDOM * RANDOM % 16777216)); }
 
@@ -29,7 +34,7 @@ for i in $(seq 1 "$RECORDS"); do
   key=$(rand_key)
   hex=$(rand_hex)
   code=$(curl -s -o /dev/null -w "%{http_code}" \
-    -X POST "http://${KUBECOLORS_ENDPOINT}/api/color/${key}" \
+    -X POST "${KUBECOLORS_BASE_URL}/api/color/${key}" \
     -H "Content-Type: application/json" \
     -d "{\"color\":\"${hex}\"}")
   if [[ "$code" == "201" ]]; then

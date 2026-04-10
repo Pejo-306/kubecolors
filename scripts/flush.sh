@@ -17,7 +17,12 @@ if [[ -z "$KUBECOLORS_ENDPOINT" ]]; then
   exit 1
 fi
 
-keys=$(curl -s "http://${KUBECOLORS_ENDPOINT}/api/color" | jq -r '.[].key')
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=kubecolors-base-url.sh
+source "${_SCRIPT_DIR}/kubecolors-base-url.sh"
+KUBECOLORS_BASE_URL="$(kubecolors_normalized_base_url "$KUBECOLORS_ENDPOINT")"
+
+keys=$(curl -s "${KUBECOLORS_BASE_URL}/api/color" | jq -r '.[].key')
 total=$(echo "$keys" | grep -c . || true)
 
 if [[ "$total" -eq 0 ]]; then
@@ -40,7 +45,7 @@ ok=0
 fail=0
 
 while IFS= read -r key; do
-  code=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "http://${KUBECOLORS_ENDPOINT}/api/color/${key}")
+  code=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "${KUBECOLORS_BASE_URL}/api/color/${key}")
   if [[ "$code" == "204" ]]; then
     ok=$((ok + 1))
   else

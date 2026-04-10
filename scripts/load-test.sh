@@ -23,7 +23,10 @@ if [[ -z "$ENDPOINT" ]]; then
   exit 1
 fi
 
-BASE="http://${ENDPOINT}"
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=kubecolors-base-url.sh
+source "${_SCRIPT_DIR}/kubecolors-base-url.sh"
+BASE="$(kubecolors_normalized_base_url "$ENDPOINT")"
 FAILED=""
 
 rand_hex() { printf '#%06x' $((RANDOM * RANDOM % 16777216)); }

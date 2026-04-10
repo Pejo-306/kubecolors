@@ -17,10 +17,15 @@ if [[ -z "$KUBECOLORS_ENDPOINT" ]]; then
   exit 1
 fi
 
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=kubecolors-base-url.sh
+source "${_SCRIPT_DIR}/kubecolors-base-url.sh"
+KUBECOLORS_BASE_URL="$(kubecolors_normalized_base_url "$KUBECOLORS_ENDPOINT")"
+
 assert() {
   local method="$1" path="$2" expected="$3" label="$4"
   shift 4
-  local url="http://${KUBECOLORS_ENDPOINT}${path}"
+  local url="${KUBECOLORS_BASE_URL}${path}"
   local code
   code=$(curl -sS -o /dev/null -w "%{http_code}" "$@" -X "$method" "$url") || code="curl_err"
   if [[ "$code" == "$expected" ]]; then

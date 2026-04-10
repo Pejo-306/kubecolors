@@ -68,7 +68,7 @@ help:
 	@echo "  make up"
 	@echo "  make up OVERLAY=dev"
 	@echo "  make smoke-test KUBECOLORS_ENDPOINT=http://localhost:8080"
-	@echo "  make metrics
+	@echo "  make metrics KUBECOLORS_ENDPOINT=http://localhost:8080"
 	@echo "  make load-data RECORDS=500 KEY_LENGTH=8"
 	@echo ""
 	@echo "\033[1mLOAD TESTING:\033[0m"
@@ -114,7 +114,9 @@ smoke-test:
 
 metrics:
 	@if [ -z "${KUBECOLORS_ENDPOINT}" ]; then echo "Error: KUBECOLORS_ENDPOINT is required"; exit 1; fi
-	@curl -sS "${KUBECOLORS_ENDPOINT}/metrics"
+	@SCRIPTS_DIR='${SCRIPTS_DIR}' KUBECOLORS_ENDPOINT='${KUBECOLORS_ENDPOINT}' bash -euo pipefail -c '\
+		source "$$SCRIPTS_DIR/kubecolors-base-url.sh" && \
+		curl -sS "$$(kubecolors_normalized_base_url "$$KUBECOLORS_ENDPOINT")/metrics"'
 
 load-data:
 	@if [ -z "${KUBECOLORS_ENDPOINT}" ]; then echo "Error: KUBECOLORS_ENDPOINT is required"; exit 1; fi
