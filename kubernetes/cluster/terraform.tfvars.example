@@ -1,0 +1,14 @@
+credentials_file = "path/to/your-gcp-credentials.json"
+project_id       = "your-gcp-project-id"
+region           = "europe-west3"
+
+network_name = "kubecolors-network"
+subnet_name  = "kubecolors-subnet"
+subnet_cidr  = "192.168.0.0/24"
+
+cluster_name = "kubecolors-cluster"
+
+dev_static_ip_name  = "kubecolors-dev-ip"
+prod_static_ip_name = "kubecolors-prod-ip"
+
+deletion_protection = true

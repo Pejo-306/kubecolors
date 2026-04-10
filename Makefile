@@ -1,4 +1,10 @@
-.PHONY: help namespace secrets up down build push smoke-test metrics flush load-test load-data
+# Phony targets (grouped to match `make help` sections)
+.PHONY: help
+.PHONY: build push
+.PHONY: namespace secrets up down
+.PHONY: infra-init infra-diff infra-apply infra-show infra-destroy
+.PHONY: smoke-test metrics flush load-data load-test
+
 .DEFAULT_GOAL := up
 
 # Build variables
@@ -9,6 +15,7 @@ BUILD_TAG := penikolov23/color-api:${BUILD_VERSION}
 SRC_DIR := color-api
 SCRIPTS_DIR := scripts
 KUBERNETES_DIR := kubernetes
+TERRAFORM_DIR := ${KUBERNETES_DIR}/cluster
 SOPS_AGE_KEY_FILE := keys.txt
 
 # Kustomize overlays
@@ -42,6 +49,13 @@ help:
 	@echo "    secrets                            - Decrypt and apply secrets for current OVERLAY"
 	@echo "    up                                 - namespace, secrets, then kustomize apply (DB + API)"
 	@echo "    down                               - Delete the overlay namespace (wipes all resources in it)"
+	@echo ""
+	@echo "\033[1mGCP INFRASTRUCTURE:\033[0m"
+	@echo "    infra-init                         - Download Terraform providers (run once)"
+	@echo "    infra-diff                         - Show planned infrastructure changes"
+	@echo "    infra-apply                        - Create or update GCP infrastructure (terraform apply)"
+	@echo "    infra-show                         - Show Terraform outputs (static IPs, cluster name, etc.)"
+	@echo "    infra-destroy                      - Destroy all GCP infrastructure (terraform destroy)"
 	@echo ""
 	@echo "\033[1mTESTING & OPERATIONS:\033[0m"
 	@echo "    smoke-test                         - Run smoke tests against endpoint"
@@ -101,6 +115,24 @@ up: namespace secrets
 
 down:
 	kubectl delete namespace $$(grep -E '^namespace:[[:space:]]' ${OVERLAY_DIR}/kustomization.yaml | head -1 | awk '{print $$2}') --ignore-not-found
+
+# GCP infrastructure (Terraform)
+# ------------------------------
+
+infra-init:
+	terraform -chdir=${TERRAFORM_DIR} init
+
+infra-diff:
+	terraform -chdir=${TERRAFORM_DIR} plan
+
+infra-apply:
+	terraform -chdir=${TERRAFORM_DIR} apply
+
+infra-show:
+	terraform -chdir=${TERRAFORM_DIR} output
+
+infra-destroy:
+	terraform -chdir=${TERRAFORM_DIR} destroy
 
 # Tests and operations targets
 # -----------------------------
