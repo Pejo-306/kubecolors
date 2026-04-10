@@ -6,6 +6,8 @@ namespace: kubecolors-prod
 resources:
   - prod-namespace.yaml
   - ../../base
+  - managed-tls-cert.yaml
+  - ingress.yaml
 
 images:
   - name: penikolov23/color-api

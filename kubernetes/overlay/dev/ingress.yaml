@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubecolors-dev-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: kubecolors-dev-ip
+    kubernetes.io/ingress.class: gce
+    networking.gke.io/managed-certificates: kubecolors-dev-managed-tls-cert
+spec:
+  rules:
+    - host: dev.petarnikolov.com
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: color-svc-nodeport
+                port:
+                  number: 80

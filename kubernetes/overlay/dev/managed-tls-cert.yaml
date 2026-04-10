@@ -1,0 +1,7 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: kubecolors-dev-managed-tls-cert
+spec:
+  domains:
+    - dev.petarnikolov.com
